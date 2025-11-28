@@ -32,8 +32,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          clean: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -44,8 +42,6 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           rm -rf dist/ build/ *.egg-info csh256.egg-info
-          find . -type d -name "*.egg-info" -exec rm -rf {} + || true
-          find . -type d -name "__pycache__" -exec rm -rf {} + || true
         shell: bash
 
       - name: Clean old builds (Windows)
@@ -70,10 +66,13 @@ jobs:
             python -c "import csh256; print('Backend:', csh256.get_backend())" &&
             python -c "import csh256; print('Hash:', csh256.hash('test')[:16] + '...')"
           CIBW_BEFORE_ALL_LINUX: "true"
+          CIBW_BEFORE_ALL_MACOS: brew install gcc || true
           CIBW_ENVIRONMENT_LINUX: "CFLAGS='-O3 -Wall -Wextra' CXXFLAGS='-O3 -Wall -Wextra'"
+          CIBW_ENVIRONMENT_MACOS: "CFLAGS='-O3 -Wall -Wextra' CXXFLAGS='-O3 -Wall -Wextra'"
           CIBW_ENVIRONMENT_WINDOWS: "CFLAGS='/O2' CXXFLAGS='/O2'"
           CIBW_BEFORE_BUILD: "pip install --upgrade setuptools wheel"
           CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade setuptools wheel && rm -rf build *.egg-info || true"
+          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade setuptools wheel && rm -rf build *.egg-info || true"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install --upgrade setuptools wheel"
 
       - name: Upload wheels as artifacts
