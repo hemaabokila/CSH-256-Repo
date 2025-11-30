@@ -12,7 +12,7 @@ description = "CSH-256: A hybrid password hashing algorithm with time-cost resis
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["password", "hashing", "cryptography", "security", "csh256", "pbkdf"]
-license = "MIT"
+license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -83,6 +83,3 @@ before-all = "yum install -y gcc || apt-get install -y gcc"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install gcc || true"
-
-[tool.setuptools.ext_modules]
-csh256._csh256 = {sources = ["csh256/_csh256.c"]}
