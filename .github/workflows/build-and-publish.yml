@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel build cibuildwheel twine
+          pip install setuptools==67.8.0 wheel==0.40.0 build cibuildwheel twine
 
       - name: Build wheels
         run: cibuildwheel . --output-dir wheelhouse
