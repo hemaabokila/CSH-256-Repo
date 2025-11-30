@@ -17,6 +17,3 @@ global-exclude __pycache__
 global-exclude *.so
 global-exclude *.dylib
 global-exclude *.dll
-
-# Exclude old config files
-exclude setup.cfg

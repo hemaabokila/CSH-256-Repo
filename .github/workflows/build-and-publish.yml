@@ -10,11 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       upload_to:
-        description: "Upload to PyPI"
+        description: "Upload to PyPI or Test PyPI"
         required: true
-        default: "pypi"
+        default: "testpypi"
         type: choice
         options:
+          - testpypi
           - pypi
           - none
 
@@ -25,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -60,15 +61,18 @@ jobs:
         run: cibuildwheel . --output-dir wheelhouse
         env:
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-* cp312-*"
-          CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux_* pp* *-macosx_*"
+          CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux_* pp*"
           CIBW_TEST_COMMAND: >
             python -c "import csh256; print('Backend:', csh256.get_backend())" &&
             python -c "import csh256; print('Hash:', csh256.hash('test')[:16] + '...')"
           CIBW_BEFORE_ALL_LINUX: "true"
+          CIBW_BEFORE_ALL_MACOS: brew install gcc || true
           CIBW_ENVIRONMENT_LINUX: "CFLAGS='-O3 -Wall -Wextra' CXXFLAGS='-O3 -Wall -Wextra'"
+          CIBW_ENVIRONMENT_MACOS: "CFLAGS='-O3 -Wall -Wextra' CXXFLAGS='-O3 -Wall -Wextra'"
           CIBW_ENVIRONMENT_WINDOWS: "CFLAGS='/O2' CXXFLAGS='/O2'"
           CIBW_BEFORE_BUILD: "pip install --upgrade setuptools wheel"
           CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade setuptools wheel && rm -rf build *.egg-info || true"
+          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade setuptools wheel && rm -rf build *.egg-info || true"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install --upgrade setuptools wheel"
 
       - name: Upload wheels as artifacts
@@ -117,7 +121,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -142,12 +146,12 @@ jobs:
         run: |
           python -c "import csh256; backend = csh256.get_backend(); print(f'Backend: {backend}'); exit(0 if backend == 'C' else 1)"
 
-  # Upload to PyPI
+  # Upload to PyPI or Test PyPI
   upload_pypi:
     name: Upload to PyPI
     needs: [build_wheels, build_sdist, test]
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.upload_to == 'pypi')
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || github.event_name == 'workflow_dispatch'
 
     environment:
       name: pypi
@@ -174,8 +178,19 @@ jobs:
           pip install twine
           twine check dist/*
 
-      - name: Publish to PyPI
+      - name: Publish to Test PyPI
+        if: github.event.inputs.upload_to == 'testpypi'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          skip-existing: true
+
+      - name: Publish to PyPI
+        if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || github.event.inputs.upload_to == 'pypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   # Create GitHub Release
   create_release:
