@@ -159,10 +159,10 @@ def _compress(H: List[int], block: bytes, is_single_block_mode: bool = False) ->
         T2 = _add32(Sigma0(a_sbox), MAJ(a_sbox, b, c))
         
         # Step 3: Computational Slowdown (RSA Primitive)
+        H_Inj = 0
         if t % 8 == 7:
-            h_val_64bit = h
-            h_cubed = pow(h_val_64bit, 3, MODULUS_N)
-            h = h_cubed & MASK_32
+            h_cubed = pow(h, 3, MODULUS_N)
+            H_Inj = h_cubed & MASK_32
         
         # State update
         h = g
@@ -171,7 +171,7 @@ def _compress(H: List[int], block: bytes, is_single_block_mode: bool = False) ->
         e = _add32(d, T1)
         d = c
         c = b
-        b = a
+        b = a ^ H_Inj
         a = _add32(T1, T2)
     
     # Merkle-Damgård finalization

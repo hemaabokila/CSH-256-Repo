@@ -146,6 +146,7 @@ static void compress(uint32_t H[8], const uint8_t block[64])
     /* 64 rounds */
     for (t = 0; t < 64; t++)
     {
+        uint32_t H_Inj = 0;
         /* Step 2: Non-Linear Layer (AES S-Box) */
         uint32_t a_sbox = sbox_transform(a);
         uint32_t e_sbox = sbox_transform(e);
@@ -159,7 +160,7 @@ static void compress(uint32_t H[8], const uint8_t block[64])
         {
             uint64_t h_64 = (uint64_t)h;
             uint64_t h_cubed = mod_pow(h_64, 3, 0xFFFFFFFFFFFFFFFFULL);
-            h = (uint32_t)(h_cubed & 0xFFFFFFFF);
+            H_Inj = (uint32_t)(h_cubed & 0xFFFFFFFF);
         }
 
         /* State update */
@@ -169,7 +170,7 @@ static void compress(uint32_t H[8], const uint8_t block[64])
         e = d + T1;
         d = c;
         c = b;
-        b = a;
+        b = a ^ H_Inj;
         a = T1 + T2;
     }
 
