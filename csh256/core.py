@@ -44,7 +44,7 @@ SBOX = [
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 ]
 
-MODULUS_N = 0xFFFFFFFFFFFFFFFF
+MODULUS_2_64 = 1 << 64
 MASK_32 = 0xFFFFFFFF
 
 
@@ -161,8 +161,8 @@ def _compress(H: List[int], block: bytes, is_single_block_mode: bool = False) ->
         # Step 3: Computational Slowdown (RSA Primitive)
         H_Inj = 0
         if t % 8 == 7:
-            h_cubed = pow(h, 3, MODULUS_N)
-            H_Inj = h_cubed & MASK_32
+            h_cubed_64 = pow(h, 3, MODULUS_2_64)
+            H_Inj = h_cubed_64 & MASK_32
         
         # State update
         h = g

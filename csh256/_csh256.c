@@ -158,9 +158,10 @@ static void compress(uint32_t H[8], const uint8_t block[64])
         /* Step 3: Computational Slowdown (RSA Primitive) */
         if (t % 8 == 7)
         {
-            uint64_t h_64 = (uint64_t)h;
-            uint64_t h_cubed = mod_pow(h_64, 3, 0xFFFFFFFFFFFFFFFFULL);
-            H_Inj = (uint32_t)(h_cubed & 0xFFFFFFFF);
+            __uint128_t h_sq = (__uint128_t)h * h;
+            __uint128_t h_cubed_128 = h_sq * h; 
+            uint64_t h_cubed_64 = (uint64_t)h_cubed_128;
+            H_Inj = (uint32_t)h_cubed_64;
         }
 
         /* State update */
