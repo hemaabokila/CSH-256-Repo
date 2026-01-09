@@ -202,7 +202,7 @@ This format includes all parameters needed for verification.
 ### Security Primitives
 1. **SHA-256 Functions**: Σ₀, Σ₁, σ₀, σ₁, CH, MAJ
 2. **AES S-Box**: 8-bit non-linear substitution
-3. **RSA Primitive**: Modular Cubing (h³ mod 2⁶⁴)
+3. **Modular Cubing**: Modular Cubing (h³ mod 2⁶⁴)
 
 ### Avalanche Effect
 - **Measured**: 51.56% bit diffusion
