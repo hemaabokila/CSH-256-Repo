@@ -158,7 +158,7 @@ def _compress(H: List[int], block: bytes, is_single_block_mode: bool = False) ->
         T1 = _add32(h, Sigma1(e_sbox), CH(e_sbox, f, g), K_t[t], W[t])
         T2 = _add32(Sigma0(a_sbox), MAJ(a_sbox, b, c))
         
-        # Step 3: Computational Slowdown (RSA Primitive)
+        # Step 3: Computational Slowdown (Modular Cubing)
         H_Inj = 0
         if t % 8 == 7:
             h_cubed_64 = pow(h, 3, MODULUS_2_64)

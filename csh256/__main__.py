@@ -203,7 +203,7 @@ def cmd_info(args):
     print(f"")
     print(f"Security Features:")
     print(f"  ✓ AES S-Box non-linearity")
-    print(f"  ✓ RSA-inspired modular exponentiation")
+    print(f"  ✓ Modular Cubing")
     print(f"  ✓ Configurable time-cost")
     print(f"  ✓ 51.56% avalanche effect")
     

@@ -20,7 +20,7 @@ A hybrid password hashing algorithm combining the structural robustness of tradi
 CSH-256 implements three security layers:
 
 1. **Non-Linearity Layer**: AES S-Box substitution for enhanced diffusion
-2. **Computational Slowdown**: Modular exponentiation (h³ mod 2⁶⁴) inspired by RSA
+2. **Computational Slowdown**: Modular Cubing (h³ mod 2⁶⁴)
 3. **Time-Cost Iteration**: Password stretching through repeated compression
 
 The algorithm achieves **51.56% avalanche effect**, meaning changing a single input bit changes approximately half of the output bits.
@@ -202,7 +202,7 @@ This format includes all parameters needed for verification.
 ### Security Primitives
 1. **SHA-256 Functions**: Σ₀, Σ₁, σ₀, σ₁, CH, MAJ
 2. **AES S-Box**: 8-bit non-linear substitution
-3. **RSA Primitive**: Modular exponentiation (h³ mod 2⁶⁴)
+3. **RSA Primitive**: Modular Cubing (h³ mod 2⁶⁴)
 
 ### Avalanche Effect
 - **Measured**: 51.56% bit diffusion

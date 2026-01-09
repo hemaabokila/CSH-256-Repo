@@ -76,23 +76,6 @@ static inline uint32_t sbox_transform(uint32_t word)
     return result;
 }
 
-/* Modular exponentiation: (base^exp) mod modulus */
-static uint64_t mod_pow(uint64_t base, uint64_t exp, uint64_t modulus)
-{
-    uint64_t result = 1;
-    base %= modulus;
-    while (exp > 0)
-    {
-        if (exp & 1)
-        {
-            result = (__uint128_t)result * base % modulus;
-        }
-        base = (__uint128_t)base * base % modulus;
-        exp >>= 1;
-    }
-    return result;
-}
-
 /* Convert bytes to big-endian 32-bit words */
 static void bytes_to_words(const uint8_t *bytes, uint32_t *words, size_t count)
 {
@@ -155,7 +138,7 @@ static void compress(uint32_t H[8], const uint8_t block[64])
         T1 = h + SIGMA1(e_sbox) + CH(e_sbox, f, g) + K[t] + W[t];
         T2 = SIGMA0(a_sbox) + MAJ(a_sbox, b, c);
 
-        /* Step 3: Computational Slowdown (RSA Primitive) */
+        /* Step 3: Computational Slowdown (Modular Cubing) */
         if (t % 8 == 7)
         {
             __uint128_t h_sq = (__uint128_t)h * h;
